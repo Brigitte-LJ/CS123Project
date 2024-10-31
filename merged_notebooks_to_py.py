@@ -1,10 +1,40 @@
-######## ALEX CODE ##########
-
 import csv
+import json
 
+# global vars
 numTechElectives = 3 # how many tech electives are required?
-majorCSVpath = "/content/CS_Major_Requirements"
+majorCSVpath = "CS_Major_Requirements" #TODO: update this 
 
+coursesToDo = []
+coursesDone  = []
+
+coreReqs = []
+majorReqs = []
+HSAreqs = []
+totalReqs = []
+
+####### sample data, not extensive ######
+inputCourses = [
+    "CSCI005",
+    "CSCI060",
+    "MATH019",
+    "WRIT001",
+    "PHYS023"]
+coreReqs = [
+    ["MATH019"],
+    ["CSCI005", "CSCI042"],
+    ["PHYS023"],
+    ["CORE099"],
+    ["CHEM024"],
+    ["WRIT001"]]
+HSAReqs = [
+    ["HSA10"],
+    ["WRIT001"],
+    ["HSABreadth"],
+    ["HSADepth"],
+    ["WritInt"]]
+
+##### function definitions
 
 def csvToLoL(csvpath):
   """ input: file path to a CSV of course requirements, CSV formatted as shown below
@@ -39,18 +69,9 @@ def csvToLoL(csvpath):
       reqs.append(techElectives) # deal with Tech Electives last
     return reqs
 
-majorReqs = csvToLoL(majorCSVpath)
-
-coursesToDo = []
-coursesDone = []
-
-inputCourses = [
-    "CSCI005",
-    "CSCI060",
-    "MATH019"
-]
-
 def checkReqsMet(inputList, reqsList):
+    """ TODO: ADD FULL DOCSTRING HERE
+    """
     # inputList is a flat list
     # reqsList is a list of lists
     for subset in reqsList:
@@ -59,90 +80,6 @@ def checkReqsMet(inputList, reqsList):
             coursesDone.append(subset)
         else:
             coursesToDo.append(subset)
-
-coursesToDo = [] # emptied in case we rerun this cell
-coursesDone = [] # emptied in case we rerun this cell
-checkReqsMet(inputCourses, majorReqs)
-
-print("Courses Done is", coursesDone)
-print("Courses ToDo is", coursesToDo)
-
-###############
-###### NINA CODE ######
-
-# filtering by course area returns a list of course codes.
-import json
-
-def filterByArea(area):
-  with open("course-area.json", 'r') as file: # Open the JSON file
-      course_data = json.load(file)  # Load the JSON data from the file into list
-
-  output = []
-  for course in course_data:  # Print all courses that have the attribute of area
-    if area in set(course["course_areas"]):
-      courseOnly = course["course_code"][:-2].strip() # Remove two-lettered campus signature, remove whitespaces
-      output.append(courseOnly) # add course into final list
-  return output # return list of all courses in parameter area.
-
-
-filterByArea("CSCI")
-
-
-##### BRIGITTE CODE ####
-
-# filtering by course area returns a list of course codes.
-import json
-
-# at some point deal with CSV import of data but not yet!
-
-coursesToDo = []
-coursesDone  = []
-
-
-#example
-inputCourses = [
-    "CSCI005",
-    "CSCI060",
-    "MATH019",
-    "WRIT001",
-    "PHYS023",
-]
-
-#just an example, not extensive
-majorReqs = [
-    ["CSCI042", "CSCI060"],
-    ["CSCI070"],
-    ["CSCI081"],
-]
-
-#just an example, not extensive
-coreReqs = [
-    ["MATH019"],
-    ["CSCI005", "CSCI042"],
-    ["PHYS023"],
-    ["CORE099"],
-    ["CHEM024"],
-    ["WRIT001"]
-]
-
-#just an example, not extensive
-HSAReqs = [
-    ["HSA10"],
-    ["WRIT001"],
-    ["HSABreadth"],
-    ["HSADepth"],
-    ["WritInt"]
-]
-
-
-totalReqs = []
-def getTotalReqs(majorReqs, coreReqs, HSAReqs):
-    totalReqs.append(coreReqs)
-    totalReqs.append(majorReqs)
-    totalReqs.append(HSAReqs)
-
-#creating the total reqs
-getTotalReqs(majorReqs, coreReqs, HSAReqs)
 
 def checkReqsMet(inputList):
     # inputList is a
@@ -154,23 +91,51 @@ def checkReqsMet(inputList):
                 coursesDone.append(subset)
             if not(met) and not(subset in coursesToDo):
                 coursesToDo.append(subset)
-coursesToDo = [] # emptied in case we rerun this cell
-coursesDone = [] # emptied in case we rerun this cell
-checkReqsMet(inputCourses)
+
+def filterByArea(area):
+  """ TODO: ADD DOCSTRING HERE
+  """
+  with open("course-area.json", 'r') as file: # Open the JSON file
+      course_data = json.load(file)  # Load the JSON data from the file into list
+
+  output = []
+  for course in course_data:  # Print all courses that have the attribute of area
+    if area in set(course["course_areas"]):
+      courseOnly = course["course_code"][:-2].strip() # Remove two-lettered campus signature, remove whitespaces
+      output.append(courseOnly) # add course into final list
+  return output # return list of all courses in parameter area.
+
+def printNice(inputList):
+    for i in inputList:
+        print(i)
+
+
+####### code runs ######
+
+majorReqs = csvToLoL(majorCSVpath)
+checkReqsMet(inputCourses, majorReqs)
+
+print("Courses Done is", coursesDone)
+print("Courses ToDo is", coursesToDo)
+
+filterByArea("CSCI")
+
+def getTotalReqs(majorReqs, coreReqs, HSAReqs):
+    totalReqs.append(coreReqs)
+    totalReqs.append(majorReqs)
+    totalReqs.append(HSAReqs)
+
+#creating the total reqs
+getTotalReqs(majorReqs, coreReqs, HSAReqs)
 
 print("Courses Done is", coursesDone)
 print("Courses ToDo is", coursesToDo) #not pretty, so lets make it pretty
 
 #functions to allow for nice print out
-def printNice(inputList):
-    for i in inputList:
-        print(i)
-
 print("Courses Done:") 
 printNice(coursesDone)
 print("Courses To Do:") 
 printNice(coursesToDo)
-
 
 #this doesn't give us much information about the courses still left to do
 #so lets add a filter to check major/core/HSA etc
