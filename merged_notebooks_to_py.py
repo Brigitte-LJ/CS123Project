@@ -143,24 +143,82 @@ def sample_run_1():
    print("HSA Courses Done is", totalReqsDict["hsaDone"])
    print("HSA Courses ToDo is", totalReqsDict["hsaToDo"])
 
+
+# Takes in an array of already taken course codes
+# Returns a dictionary containing only the taken course 
+# tagged with HSAs and their corresponding credit value
+# ex) input = ["HIST055  CM", "CSCI140  HM", "ART 005  PO", "DANC051  PO", "ART 060  HM"]
+# output = {'HIST055  CM': '1.0', 'ART 005  PO': '1.0', 'DANC051  PO': '0.5', 'ART 060  HM': 0.5}
+
+def filterHSA(coursesDone):
+    # First, filter out all non-HSAS, we can find out whether or not a course is an HSA by looking in the course-area.json file. 
+    with open("course-area.json", 'r') as file: # Open the JSON file containing area data
+        courseArea = json.load(file)
+    
+    with open("course-section.json", 'r') as file: # Open the JSON file containing credit data
+        courseSection = json.load(file)
+    
+    HSAcredits = {}
+    allTakenData = []
+
+    # Filter through courseArea for taken courses
+    # Add taken courses and their corresponding area data into allTakenData
+    for course in coursesDone:
+        allTakenData.extend(list(filter(lambda x: x["course_code"] == course, courseArea)))
+    
+    # Filter through allTakenData
+    # Add only courses which are tagged with HSAs into HSAcredits as keys with empty values
+    for taken in allTakenData:
+        if ('4HSS' in taken["course_areas"]) or ('4HSA'in taken["course_areas"]):
+            HSAcredits[taken["course_code"]] = ""
+
+    # For each HSA taken, find and set its credit amount as the value corresponding to
+    # its course code in a key-value pair within the HSAcredits dictionary
+    for HSA in HSAcredits:
+        for course in courseSection:
+            if (HSA in course["courseSectionId"]):
+                HSAcredits[HSA] = course["creditHours"]
+    
+    # If the HSA taken is at Mudd, convert its credit value to the 5C credit value
+    # i.e. Divide all mudd credits by 3.
+    for HSA in HSAcredits:
+        if ("HM" in HSA):
+            HSAcredits[HSA] =  float(HSAcredits[HSA]) / 3.0
+        
+    return HSAcredits
+
 # Takes in an array of already taken course codes
 # Returns true if breadth is fulfilled, false if otherwise.
 # Breadth is fulfilled if there are at least 5 full courses taken in 5 different areas. 
-# (a full course is 3.0 cr at mudd, 1.0 cr in others) 
-def checkBreadth(coursesDone):
+# (a full course is 1.0 cr (assuming mudd is converted))
 
-    # First, filter out all non-HSAS, we can find out whether or not a course is an HSA by looking in the course-area.json file. 
-    with open("CS123Project/course-area.json", 'r') as file: # Open the JSON file containing area data
-        courseArea = json.load(file)
-    
-    HSAcredits = {}
-    for course in coursesDone:
-        allTakenData = list(filter(lambda x:x["course_code"][0:9].strip() == course, courseArea))
-        
-        for taken in allTakenData:
-            if ('4HSS'or '4HSA' in taken["course_areas"]):
-                HSAcredits[taken["course_code"]] = "" 
-        print(allTakenData)        
+def checkBreadth(niceHSAs):
+    completeArea = []
+    count = 0
+    halves = {}
+    for HSA in niceHSAs:
+        # credit is 1.0 and area is not complete:
+        if ((float(niceHSAs[HSA]) == 1.0) and (HSA[0:5] not in completeArea)):
+            count+=1
+            completeArea.extend(HSA[0:5])
+        # credit is 0.5 and area is not complete:
+        elif (float(niceHSAs[HSA]) == 0.5 and (HSA[0:5] not in completeArea)):
+            # There have been no previous 0.5 courses in this area:
+            if (HSA[0:5] not in halves):
+                halves[HSA[0:5]] = 0.5
+            # There has been a previous 0.5 course in this area:
+            elif (halves[HSA[0:5]] == 0.5):
+                count+=1
+                completeArea.extend(HSA[0:5]) # 0.5 + 0.5 = a full course, add to completeArea
+                halves[HSA[0:5]] = 1.0
+    return (count >= 5)
+
+# Function calls:
+# done = ["HIST055  CM", "CSCI140  HM", "ART 005  PO", "DANC051  PO", "ANTH190  SC", "ASIA190  PO", "DANC010  PO"]
+# niceHSAs = filterHSA(done)
+
+
+      
 
 ############## TUTORIAL SECTION 2 ################
 
