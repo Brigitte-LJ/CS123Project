@@ -235,4 +235,85 @@ def filterByArea(area):
       output.append(courseOnly) # add course into final list
   return output # return list of all courses in parameter area.
 
-  
+
+
+############## TUTORIAL SECTION 3 ########################
+import ipywidgets as widgets
+from ipywidgets import interact, interactive, fixed, interact_manual
+from IPython.display import display
+
+
+
+coreItemsDone = [widgets.Label(str(i)) for i in totalReqsDict["coreDone"]]
+HSAItemsDone = [widgets.Label(str(i)) for i in totalReqsDict["hsaDone"]]
+majorItemsDone = [widgets.Label(str(i)) for i in totalReqsDict["majorDone"]]
+tab_contents = [widgets.GridBox(coreItemsDone, layout=widgets.Layout(grid_template_columns="repeat(1, 200px)")), 
+                widgets.GridBox(majorItemsDone, layout=widgets.Layout(grid_template_columns="repeat(1, 200px)")), 
+                widgets.GridBox(HSAItemsDone, layout=widgets.Layout(grid_template_columns="repeat(1, 200px)"))]
+#children = [widgets.Text(description=name) for name in tab_contents]
+tab = widgets.Tab()
+tab.children = tab_contents
+tab.titles = ["Core To Do", "Major To Do", "HSA To Do"]
+#tab
+
+
+
+
+courseTextBox = widgets.Text(    
+    value='',
+    placeholder='Add a course',
+    description='Course List:',
+    disabled=False    
+)
+
+addCourseButton = widgets.Button(description='Enter Course',
+    disabled=False,
+    button_style='success', # 'success', 'info', 'warning', 'danger' or ''
+    tooltip='Click me')
+
+output = widgets.Output()
+output2 = widgets.Output()
+
+removeCourseButton = widgets.Button(
+   description="Remove",
+   disabled=False,
+   button_style="danger"
+)
+
+def on_add_clicked(b):
+    if courseTextBox.value != '':
+        inputCourses.append(courseTextBox.value)
+    output.clear_output()
+    with output:
+        print("Course List:", inputCourses)
+
+def on_remove_click(b):
+   inputCourses.remove(inputCourses[-1])
+   output.clear_output()
+   with output:
+      print("Course List:", inputCourses)
+
+addCourseButton.on_click(on_add_clicked)
+removeCourseButton.on_click(on_remove_click)
+
+updateReqButton = widgets.Button(
+   description="Update Requirements",
+   disabled=False,
+   button_style="info"
+)
+
+def on_update_clicked(b):
+   checkTotalReqsMet(totalReqsDict, inputCourses)
+   output2.clear_output()
+   with output2:
+    print(totalReqsDict["coreToDo"])
+      
+
+updateReqButton.on_click(on_update_clicked)
+
+
+widgets.VBox([courseTextBox,
+              widgets.HBox([addCourseButton, removeCourseButton]), 
+              output, 
+              updateReqButton,
+              output2])
