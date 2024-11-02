@@ -9,7 +9,18 @@ coreCSVpath = ""
 majorCSVpath = "CS_Major_Requirements" #TODO: update this 
 hsaCSVpath = ""
 
-totalReqsDict = {}
+totalReqsDict = {
+    "core": None,
+    "major": None,
+    "hsa": None,
+    "coreDone": [],
+    "coreToDo": [],
+    "majorDone": [],
+    "majorToDo": [],
+    "hsaDone": [],
+    "hsaToDo": []
+}
+# see defineReqsDict() for completed dictionary format
 
 ####### sample data, not extensive ######
 
@@ -72,36 +83,23 @@ def csvToLoL(csvpath):
       reqs.append(techElectives) # deal with Tech Electives last
     return reqs
 
-
-def defineReqsDict():
+def defineReqsDict(reqsDict):
     """ input: n/a
         output: populates totalReqsDict with area requirements,
                 area courses Done, and area courses To Do
     """
     if coreCSVpath != "":
-        coreReqs = csvToLoL(coreCSVpath)
+        reqsDict["core"] = csvToLoL(coreCSVpath)
     else: 
-        coreReqs = sampleData["coreReqs"]
+        reqsDict["core"] = sampleData["coreReqs"]
     if majorCSVpath != "":
-        majorReqs = csvToLoL(majorCSVpath)
+        reqsDict["major"] = csvToLoL(majorCSVpath)
     else:
         majorReqs = sampleData["majorReqs"]
     if hsaCSVpath != "":
-        hsaReqs = csvToLoL(hsaCSVpath)
+        reqsDict["hsa"] = csvToLoL(hsaCSVpath)
     else: 
-        hsaReqs = sampleData["hsaReqs"]
-
-    reqsDict = {
-        "core": coreReqs,
-        "major": majorReqs,
-        "hsa": hsaReqs,
-        "coreDone": [],
-        "coreToDo": [],
-        "majorDone": [],
-        "majorToDo": [],
-        "hsaDone": [],
-        "hsaToDo": []
-    }
+        reqsDict["hsa"] = sampleData["hsaReqs"]
 
     return reqsDict
 
@@ -121,7 +119,6 @@ def checkAreaReqsMet(reqsDict, inputList, area):
             reqsDict[f"{area}ToDo"].append(subset)
     return reqsDict
 
-
 def checkTotalReqsMet(reqsDict, inputList):
     """ takes in and updates reqsDict
     """
@@ -136,14 +133,15 @@ def printNice(inputList):
 
 def sample_run_1():
    """ like main, but I don't necessarily want to call every time I run the file"""
-   totalReqsDict = defineReqsDict()
-#    pdb.set_trace()
-#    pdb.set_trace()
+   global totalReqsDict
+   totalReqsDict = defineReqsDict(totalReqsDict)
    totalReqsDict = checkTotalReqsMet(totalReqsDict, inputCourses)
-#    pdb.set_trace()
+   print("Core Courses Done is", totalReqsDict["coreDone"])
+   print("Core Courses ToDo is", totalReqsDict["coreToDo"])
    print("Major Courses Done is", totalReqsDict["majorDone"])
-#    pdb.set_trace()
    print("Major Courses ToDo is", totalReqsDict["majorToDo"])
+   print("HSA Courses Done is", totalReqsDict["hsaDone"])
+   print("HSA Courses ToDo is", totalReqsDict["hsaToDo"])
 
 
 ############## TUTORIAL SECTION 2 ################
@@ -160,107 +158,3 @@ def filterByArea(area):
       courseOnly = course["course_code"][:-2].strip() # Remove two-lettered campus signature, remove whitespaces
       output.append(courseOnly) # add course into final list
   return output # return list of all courses in parameter area.
-
-
-########### NON-DICTIONARY STRUCTURED CODE ########3
-# if we still like dictionary at next push, get rid of this # 
-
-# coursesToDo = []
-# coursesDone  = []
-
-# coreReqs = []
-# majorReqs = []
-# HSAreqs = []
-# totalReqs = []
-# filterByArea("CSCI")
-
-# def checkReqsMet(inputList):
-#     # inputList is a
-#     # reqsList is a list of lists
-#     for section in totalReqs:
-#         for subset in section:
-#             met = any(course in subset for course in inputList)
-#             if met and not(subset in coursesDone):
-#                 coursesDone.append(subset)
-#             if not(met) and not(subset in coursesToDo):
-#                 coursesToDo.append(subset)
-
-# def checkReqsMet(inputList, reqsList):
-#     """ ADD FULL DOCSTRING HERE
-#     """
-#     # inputList is a flat list
-#     # reqsList is a list of lists
-#     for subset in reqsList:
-#         met = any(course in subset for course in inputList)
-#         if met:
-#             coursesDone.append(subset)
-#         else:
-#             coursesToDo.append(subset)
-
-# def getTotalReqs(majorReqs, coreReqs, HSAReqs):
-#     totalReqs.append(coreReqs)
-#     totalReqs.append(majorReqs)
-#     totalReqs.append(HSAReqs)
-
-# #creating the total reqs
-# getTotalReqs(majorReqs, coreReqs, HSAReqs)
-
-# print("Courses Done is", coursesDone)
-# print("Courses ToDo is", coursesToDo) #not pretty, so lets make it pretty
-
-# #functions to allow for nice print out
-# print("Courses Done:") 
-# printNice(coursesDone)
-# print("Courses To Do:") 
-# printNice(coursesToDo)
-
-# #this doesn't give us much information about the courses still left to do
-# #so lets add a filter to check major/core/HSA etc
-# majorReqsDone =[]
-# majorReqsToDo = []
-# coreReqsDone = []
-# coreReqsToDo = []
-# HSAReqsDone = []
-# HSAReqsToDo = []
-
-# def filterReqs(inputList, areaFilter):
-#     reqsList = []
-#     toDoList = []
-#     doneList = []
-#     if areaFilter == "Core":
-#         reqsList = coreReqs
-#         toDoList = coreReqsToDo
-#         doneList = coreReqsDone
-#     if areaFilter == "Major":
-#         reqsList = majorReqs
-#         toDoList = majorReqsToDo
-#         doneList = majorReqsDone
-#     if areaFilter == "HSA":
-#         reqsList = HSAReqs
-#         toDoList = HSAReqsToDo
-#         doneList = HSAReqsDone
-#     for subset in reqsList:
-#         met = any(course in subset for course in inputList)
-#         if met and not(subset in doneList):
-#                   doneList.append(subset)
-#         if not(met) and not(subset in toDoList):
-#                   toDoList.append(subset)
-
-
-# #applying the filters
-# filterReqs(inputCourses, "HSA")
-# filterReqs(inputCourses, "Core")
-# filterReqs(inputCourses, "Major")
-
-# print("HSA Reqs Met:")
-# printNice(HSAReqsDone)
-# print("HSA Reqs Not Met:")
-# printNice(HSAReqsToDo)
-# print("Core Reqs Met:")
-# printNice(coreReqsDone)
-# print("Core Reqs Not Met:")
-# printNice(coreReqsToDo)
-# print("Major Reqs Met:")
-# printNice(majorReqsDone)
-# print("Major Reqs Not Met:")
-# printNice(majorReqsToDo)
