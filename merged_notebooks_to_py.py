@@ -158,3 +158,5 @@ def filterByArea(area):
       courseOnly = course["course_code"][:-2].strip() # Remove two-lettered campus signature, remove whitespaces
       output.append(courseOnly) # add course into final list
   return output # return list of all courses in parameter area.
+
+  
