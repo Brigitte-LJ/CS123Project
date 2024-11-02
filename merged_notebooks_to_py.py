@@ -143,6 +143,24 @@ def sample_run_1():
    print("HSA Courses Done is", totalReqsDict["hsaDone"])
    print("HSA Courses ToDo is", totalReqsDict["hsaToDo"])
 
+# Takes in an array of already taken course codes
+# Returns true if breadth is fulfilled, false if otherwise.
+# Breadth is fulfilled if there are at least 5 full courses taken in 5 different areas. 
+# (a full course is 3.0 cr at mudd, 1.0 cr in others) 
+def checkBreadth(coursesDone):
+
+    # First, filter out all non-HSAS, we can find out whether or not a course is an HSA by looking in the course-area.json file. 
+    with open("CS123Project/course-area.json", 'r') as file: # Open the JSON file containing area data
+        courseArea = json.load(file)
+    
+    HSAcredits = {}
+    for course in coursesDone:
+        allTakenData = list(filter(lambda x:x["course_code"][0:9].strip() == course, courseArea))
+        
+        for taken in allTakenData:
+            if ('4HSS'or '4HSA' in taken["course_areas"]):
+                HSAcredits[taken["course_code"]] = "" 
+        print(allTakenData)        
 
 ############## TUTORIAL SECTION 2 ################
 
