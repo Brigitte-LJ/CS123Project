@@ -213,11 +213,29 @@ def checkBreadth(niceHSAs):
                 halves[HSA[0:5]] = 1.0
     return (count >= 5)
 
-# Function calls:
-# done = ["HIST055  CM", "CSCI140  HM", "ART 005  PO", "DANC051  PO", "ANTH190  SC", "ASIA190  PO", "DANC010  PO"]
+
+# Takes in an array of already taken course codes
+# Returns true if depth is fulfilled, false if otherwise.
+# Depth is fulfilled if there are at least 4 full courses taken in one areas. 
+# (a full course is 1.0 cr (assuming mudd is converted))
+def checkDepth(niceHSAs):
+    uniqueArea = {}
+    
+    for HSA in niceHSAs:
+        if HSA[0:4] not in uniqueArea:
+            uniqueArea[HSA[0:4]] = float(niceHSAs[HSA])
+        else:
+            uniqueArea[HSA[0:4]] += float(niceHSAs[HSA])
+    print("Concentration:", max(uniqueArea, key=uniqueArea.get)) # optional, print the area that the student currently has the most credits completed for(i.e. most likely concentration).
+    return (max(uniqueArea.values()) >= 4.0) # there are at least 4.0 credits earned in one area
+                                             # (indicating four full courses with the 5C 1.0 scale)
+
+
+#Function calls:
+# done = ["HIST055  CM", "CSCI140  HM", "DANC051  PO", "ANTH190  SC", "ASIA190  PO", "DANC010  PO", "DANC122  PO", "DANC124  PO"]
 # niceHSAs = filterHSA(done)
-
-
+# print("Breadth fulfilled:" , checkBreadth(niceHSAs))
+# print("Depth(Concentration) fulfilled:" , checkDepth(niceHSAs))
       
 
 ############## TUTORIAL SECTION 2 ################
