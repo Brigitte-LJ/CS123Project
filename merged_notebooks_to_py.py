@@ -1,14 +1,15 @@
 import csv
 import json
-import pdb
 
-# global vars
-numTechElectives = 3 # how many tech electives are required?
+### GLOBAL VARIABLES ###
 
-coreCSVpath = ""
-majorCSVpath = "CS_Major_Requirements" #TODO: update this 
-hsaCSVpath = ""
+# CSV files may be downloaded from the README.md file.
+coreCSVpath = "Core_Requirements_CS_123.csv"
+majorCSVpath = "CS_Major_Requirements_CS_123.csv"
+hsaCSVpath = "HSA_Requirements_CS_123.csv"
 
+# We will use this dictionary to store and update our requirement data.
+# It is initialized as blank, and is populated by calling defineReqsDict().
 totalReqsDict = {
     "core": None,
     "major": None,
@@ -20,33 +21,18 @@ totalReqsDict = {
     "hsaDone": [],
     "hsaToDo": []
 }
-# see defineReqsDict() for completed dictionary format
 
-####### sample data, not extensive ######
+# TODO: should be a dictionary for each major?
+numTechElectives = 3 # how many tech electives are required?
 
+### SAMPLE DATA ###
 inputCourses = [
     "CSCI005",
     "CSCI060",
     "MATH019",
     "WRIT001",
-    "PHYS023"]
-
-sampleData = {
-    "coreReqs": [
-    ["MATH019"],
-    ["CSCI005", "CSCI042"],
-    ["PHYS023"],
-    ["CORE099"],
-    ["CHEM024"],
-    ["WRIT001"]],
-    
-    "hsaReqs": [
-    ["HSA10"],
-    ["WRIT001"],
-    ["HSABreadth"],
-    ["HSADepth"],
-    ["WritInt"]]
-}
+    "PHYS023"
+    ]
 
 ############### TUTORIAL SECTION 1 ###############
 
@@ -68,11 +54,11 @@ def csvToLoL(csvpath):
     nonTechElectives = []
     techElectives = []
     for row in reader:
-      coursecode = row[2]
-      if row[1] == "y": # tech elective case
+      coursecode = row[0]
+      if row[2] == "y": # tech elective case
         techElectives.append(coursecode)
       else:
-        if int(row[-1])==i: # our CSV data is a string, and "0" =/= 0
+        if int(row[-2])==i: # our CSV data is a string, and "0" =/= 0
           nonTechElectives.append(coursecode)
         else:
           reqs.append(nonTechElectives)
@@ -88,19 +74,9 @@ def defineReqsDict(reqsDict):
         output: populates totalReqsDict with area requirements,
                 area courses Done, and area courses To Do
     """
-    if coreCSVpath != "":
-        reqsDict["core"] = csvToLoL(coreCSVpath)
-    else: 
-        reqsDict["core"] = sampleData["coreReqs"]
-    if majorCSVpath != "":
-        reqsDict["major"] = csvToLoL(majorCSVpath)
-    else:
-        majorReqs = sampleData["majorReqs"]
-    if hsaCSVpath != "":
-        reqsDict["hsa"] = csvToLoL(hsaCSVpath)
-    else: 
-        reqsDict["hsa"] = sampleData["hsaReqs"]
-
+    reqsDict["core"] = csvToLoL(coreCSVpath)
+    reqsDict["major"] = csvToLoL(majorCSVpath)
+    reqsDict["hsa"] = csvToLoL(hsaCSVpath)
     return reqsDict
 
 def checkAreaReqsMet(reqsDict, inputList, area):
@@ -127,9 +103,6 @@ def checkTotalReqsMet(reqsDict, inputList):
     reqsDict = checkAreaReqsMet(reqsDict, inputList, "hsa")
     return reqsDict
 
-def printNice(inputList):
-    for i in inputList:
-        print(i)
 
 def sample_run_1():
    """ like main, but I don't necessarily want to call every time I run the file"""
