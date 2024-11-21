@@ -166,25 +166,19 @@ def filterHSA(coursesDone):
 # (a full course is 1.0 cr (assuming mudd is converted))
 
 def checkBreadth(niceHSAs):
-    completeArea = []
-    count = 0
-    halves = {}
+    uniqueArea = {}
+
     for HSA in niceHSAs:
-        # credit is 1.0 and area is not complete:
-        if ((float(niceHSAs[HSA]) == 1.0) and (HSA[0:5] not in completeArea)):
-            count+=1
-            completeArea.extend(HSA[0:5])
-        # credit is 0.5 and area is not complete:
-        elif (float(niceHSAs[HSA]) == 0.5 and (HSA[0:5] not in completeArea)):
-            # There have been no previous 0.5 courses in this area:
-            if (HSA[0:5] not in halves):
-                halves[HSA[0:5]] = 0.5
-            # There has been a previous 0.5 course in this area:
-            elif (halves[HSA[0:5]] == 0.5):
-                count+=1
-                completeArea.extend(HSA[0:5]) # 0.5 + 0.5 = a full course, add to completeArea
-                halves[HSA[0:5]] = 1.0
-    return (count >= 5)
+        if HSA[0:4] not in uniqueArea:
+            uniqueArea[HSA[0:4]] = float(niceHSAs[HSA])
+        else:
+            uniqueArea[HSA[0:4]] += float(niceHSAs[HSA])
+    fullCourse = 0
+    for credit in uniqueArea.values():
+        if credit >= 1.0:
+            fullCourse += 1
+
+    return (fullCourse >= 5) # There are at least 5 full courses taken in 5 unique areas
 
 
 # Takes in an array of already taken course codes
