@@ -277,21 +277,6 @@ def checkMuddHums(coursesDone):
     print(creditSum) # optional, print credit sum of all taken mudd hums so far
     return (creditSum >= 12) 
 
-# Return true if there are at least 4 full Mudd Hums taken(12 HM credits/4 5C credits), 
-# else, return false
-def checkMuddHums(coursesDone):
-    muddHums = tidyHSA(coursesDone, True) # Call tidyHSA with the special parameter 
-                                          # muddHumTrue = True to get a dictionary 
-                                          # of {coursecode:credit} excluding non-mudd hums
-    creditSum = 0
-    
-    for credit in muddHums.values():
-        creditSum += float(credit) # sum up all credits earned from mudd hums
-    
-    print(muddHums) # optional, print all taken mudd hums
-    print(creditSum) # optional, print credit sum of all taken mudd hums so far
-    return (creditSum >= 12) 
-
 #--# Function calls: #--#
 
 ## Define Example List of Taken Courses ##
