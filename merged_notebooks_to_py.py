@@ -13,9 +13,9 @@ hsaCSVpath = "HSA_Requirements_CS_123.csv"
 # We will use this dictionary to store and update our requirement data.
 # It is initialized as blank, and is populated by calling defineReqsDict().
 totalReqsDict = {
-    "core": None,
-    "major": None,
-    "hsa": None,
+    "core": ["PHYS023", "PHYS024", "CSCI005", "WRIT001", "HSA10", "PE001"],
+    "major": ["CSCI0060", "CSCI0070", "MATH072"],
+    "hsa": ["BREADTH001", "BREADTH002", "DEPTH01"],
     "coreDone": [],
     "coreToDo": [],
     "majorDone": [],
@@ -28,13 +28,7 @@ totalReqsDict = {
 numTechElectives = 3 # how many tech electives are required?
 
 ### SAMPLE DATA ###
-inputCourses = [
-    "CSCI005",
-    "CSCI060",
-    "MATH019",
-    "WRIT001",
-    "PHYS023"
-    ]
+inputCourses = []
 
 ############### TUTORIAL SECTION 1 ###############
 
@@ -88,7 +82,10 @@ def checkAreaReqsMet(reqsDict, inputList, area):
         outputs:updates the corresponding areaCoursesDone and 
                 areaCoursesToDo lists
     """
+    
     areaReqsList = reqsDict[area]
+    reqsDict[f"{area}Done"] = []
+    reqsDict[f"{area}ToDo"] = []
     for subset in areaReqsList:
         met = any(course in subset for course in inputList)
         if met:
@@ -118,7 +115,7 @@ def sample_run_1():
    print("HSA Courses Done is", totalReqsDict["hsaDone"])
    print("HSA Courses ToDo is", totalReqsDict["hsaToDo"])
 
-      
+#sample_run_1()
 
 ############## TUTORIAL SECTION 2 ################
 
@@ -279,7 +276,7 @@ def checkMuddHums(coursesDone):
 
 #--# Function calls: #--#
 
-## Define Example List of Taken Courses ##
+# Define Example List of Taken Courses ##
 # done = ["HIST055  CM", "CSCI140  HM", "DANC051  PO", "ANTH190  SC", "ASIA190  PO", 
 # "DANC010  PO", "DANC122  PO", "DANC124  PO", "AMST179A HM", "ARCT179A HM", "ART 179S HM", 
 # "MUS 175  JM", "MUS 175  JM"]
@@ -305,22 +302,16 @@ from ipywidgets import interact, interactive, fixed, interact_manual
 from IPython.display import display
 
 
-
-coreItemsDone = [widgets.Label(str(i)) for i in totalReqsDict["coreDone"]]
-HSAItemsDone = [widgets.Label(str(i)) for i in totalReqsDict["hsaDone"]]
-majorItemsDone = [widgets.Label(str(i)) for i in totalReqsDict["majorDone"]]
-tab_contents = [widgets.GridBox(coreItemsDone, layout=widgets.Layout(grid_template_columns="repeat(1, 200px)")), 
-                widgets.GridBox(majorItemsDone, layout=widgets.Layout(grid_template_columns="repeat(1, 200px)")), 
-                widgets.GridBox(HSAItemsDone, layout=widgets.Layout(grid_template_columns="repeat(1, 200px)"))]
-#children = [widgets.Text(description=name) for name in tab_contents]
-tab = widgets.Tab()
-tab.children = tab_contents
-tab.titles = ["Core To Do", "Major To Do", "HSA To Do"]
-#tab
+#defining our Outputs, which are the way IPyWidgets can best display and interact with text
+outputCourseList = widgets.Output()
+outputReqsListTotal = widgets.Output()
+outputCoreList = widgets.Output()
+outputMajorList = widgets.Output()
+outputHSAList = widgets.Output()
+outputSemesters = widgets.Output()
 
 
-
-
+#Creating our text boxes
 courseTextBox = widgets.Text(    
     value='',
     placeholder='Add a course',
@@ -328,54 +319,378 @@ courseTextBox = widgets.Text(
     disabled=False    
 )
 
+#Creating our buttons
 addCourseButton = widgets.Button(description='Enter Course',
     disabled=False,
     button_style='success', # 'success', 'info', 'warning', 'danger' or ''
     tooltip='Click me')
 
-output = widgets.Output()
-output2 = widgets.Output()
 
 removeCourseButton = widgets.Button(
-   description="Remove",
-   disabled=False,
-   button_style="danger"
+    description="Remove Course",
+    disabled=False,
+    button_style="danger"
 )
 
-def on_add_clicked(b):
-    if courseTextBox.value != '':
-        inputCourses.append(courseTextBox.value)
-    output.clear_output()
-    with output:
-        print("Course List:", inputCourses)
-
-def on_remove_click(b):
-   inputCourses.remove(inputCourses[-1])
-   output.clear_output()
-   with output:
-      print("Course List:", inputCourses)
-
-addCourseButton.on_click(on_add_clicked)
-removeCourseButton.on_click(on_remove_click)
-
 updateReqButton = widgets.Button(
-   description="Update Requirements",
+   description="Update!",
    disabled=False,
    button_style="info"
 )
 
+#defining our interaction functions
+def on_add_clicked(b):
+    if courseTextBox.value != '':
+        inputCourses.append(courseTextBox.value)
+    outputCourseList.clear_output()
+    with outputCourseList:
+        print("Current Courses:", inputCourses)
+
+def on_remove_click(b):
+    if inputCourses != []: 
+        for i in [semester1, semester2, semester3, semester4, semester5, semester6, semester7, semester8]:
+            if inputCourses[-1] in i:
+                i.remove(inputCourses[-1])
+        inputCourses.remove(inputCourses[-1])
+    outputCourseList.clear_output()
+    outputSemester1.clear_output()
+    outputSemester2.clear_output()
+    outputSemester3.clear_output()
+    outputSemester4.clear_output()
+    outputSemester5.clear_output()
+    outputSemester6.clear_output()
+    outputSemester7.clear_output()
+    outputSemester8.clear_output()
+    with outputCourseList:
+        print("Current Courses:", inputCourses)
+    with outputSemester1:
+        print('Courses in Semester 1:', semester1)
+    with outputSemester2:
+        print('Courses in Semester 2:', semester2)
+    with outputSemester3:
+        print('Courses in Semester 3:', semester3)
+    with outputSemester4:
+        print('Courses in Semester 4:', semester4)
+    with outputSemester5:
+        print('Courses in Semester 5:', semester5)
+    with outputSemester6:
+        print('Courses in Semester 6:', semester6)
+    with outputSemester7:
+        print('Courses in Semester 7:', semester7)
+    with outputSemester8:
+        print('Courses in Semester 8:', semester8)
+
+
 def on_update_clicked(b):
-   checkTotalReqsMet(totalReqsDict, inputCourses)
-   output2.clear_output()
-   with output2:
-    print(totalReqsDict["coreToDo"])
-      
+    updatedReqsDict = checkTotalReqsMet(totalReqsDict, inputCourses)  
+    outputReqsListTotal.clear_output()
+    outputCoreList.clear_output()
+    outputMajorList.clear_output()
+    outputHSAList.clear_output()
+    coreItemsDone = [widgets.Label(value=f"{i}") for i in updatedReqsDict["coreDone"]]
+    HSAItemsDone = [widgets.Label(str(i)) for i in updatedReqsDict["hsaDone"]]
+    majorItemsDone = [widgets.Label(str(i)) for i in updatedReqsDict["majorDone"]]    
+    coreItemsToDo = [widgets.Label(value=f"{i}") for i in updatedReqsDict["coreToDo"]]
+    HSAItemsToDo = [widgets.Label(str(i)) for i in updatedReqsDict["hsaToDo"]]
+    majorItemsToDo = [widgets.Label(str(i)) for i in updatedReqsDict["majorToDo"]]    
+    with outputReqsListTotal:
+        print("Core Remaining: ", updatedReqsDict["coreToDo"])
+        print("Major Remaining: ", updatedReqsDict["majorToDo"])
+        print("HSA Remaining: ", updatedReqsDict["hsaToDo"])
+    with outputCoreList:
+        labels = [widgets.Label(value="Core Done"), widgets.Label(value="Core To Do")]
+        display(widgets.GridBox(labels, layout=widgets.Layout(
+        grid_template_columns="repeat(2, auto)",  # Three items per row
+        grid_gap="20px",  # Space between rows and columns
+        padding="10px")))
+        #print(updatedReqsDict)
+        display(widgets.GridBox([widgets.VBox(coreItemsDone), widgets.VBox(coreItemsToDo)], layout=widgets.Layout(grid_template_columns="repeat(2, auto)", grid_gap="40px", padding="10px")))
+    with outputMajorList:
+        labels = [widgets.Label(value="Major Requirements Done"), widgets.Label(value="Major Requirements To Do")]
+        display(widgets.GridBox(labels, layout=widgets.Layout(
+        grid_template_columns="repeat(2, auto)",  # Three items per row
+        grid_gap="20px",  # Space between rows and columns
+        padding="10px")))
+        #print(updatedReqsDict)
+        display(widgets.GridBox([widgets.VBox(majorItemsDone), widgets.VBox(majorItemsToDo)], layout=widgets.Layout(grid_template_columns="repeat(2, auto)", grid_gap="40px", padding="10px")))
+    with outputHSAList:
+        labels = [widgets.Label(value="HSA Requirements Done"), widgets.Label(value="HSA Requirements To Do")]
+        display(widgets.GridBox(labels, layout=widgets.Layout(
+        grid_template_columns="repeat(2, auto)",  # Three items per row
+        grid_gap="20px",  # Space between rows and columns
+        padding="10px")))
+        #print(updatedReqsDict)
+        display(widgets.GridBox([widgets.VBox(HSAItemsDone), widgets.VBox(HSAItemsToDo)], layout=widgets.Layout(grid_template_columns="repeat(2, auto)", grid_gap="40px", padding="10px")))
 
+
+#telling the buttons which function to call when clicked
 updateReqButton.on_click(on_update_clicked)
+addCourseButton.on_click(on_add_clicked)
+removeCourseButton.on_click(on_remove_click)
+
+#Setting up initial conditions
+with outputCourseList:
+    print("Current Courses: ", inputCourses)
+
+with outputReqsListTotal:
+        print("Core Remaining: ", totalReqsDict["coreToDo"])
+        print("Major Remaining: ", totalReqsDict["majorToDo"])
+        print("HSA Remaining: ", totalReqsDict["hsaToDo"])
+
+with outputHSAList:
+        HSAItemsDone = [widgets.Label(str(i)) for i in totalReqsDict["hsaDone"]]
+        HSAItemsToDo = [widgets.Label(str(i)) for i in totalReqsDict["hsaToDo"]]
+        labels = [widgets.Label(value="HSA Requirements Done"), widgets.Label(value="HSA Requirements To Do")]
+        display(widgets.GridBox(labels, layout=widgets.Layout(
+        grid_template_columns="repeat(2, auto)",  # Three items per row
+        grid_gap="20px",  # Space between rows and columns
+        padding="10px")))
+        display(widgets.GridBox([widgets.VBox(HSAItemsDone), widgets.VBox(HSAItemsToDo)], layout=widgets.Layout(grid_template_columns="repeat(2, auto)", grid_gap="40px", padding="10px")))
 
 
+with outputCoreList:
+        coreItemsDone = [widgets.Label(value=f"{i}") for i in totalReqsDict["coreDone"]]
+        coreItemsToDo = [widgets.Label(value=f"{i}") for i in totalReqsDict["coreToDo"]]
+        labels = [widgets.Label(value="Core Done"), widgets.Label(value="Core To Do")]
+        display(widgets.GridBox(labels, layout=widgets.Layout(
+        grid_template_columns="repeat(2, auto)",  # Three items per row
+        grid_gap="20px",  # Space between rows and columns
+        padding="10px")))
+        #print(updatedReqsDict)
+        display(widgets.GridBox([widgets.VBox(coreItemsDone), widgets.VBox(coreItemsToDo)], layout=widgets.Layout(grid_template_columns="repeat(2, auto)", grid_gap="40px", padding="10px")))
+
+with outputMajorList:
+        majorItemsDone = [widgets.Label(str(i)) for i in totalReqsDict["majorDone"]]    
+        majorItemsToDo = [widgets.Label(str(i)) for i in totalReqsDict["majorToDo"]]   
+        labels = [widgets.Label(value="Major Requirements Done"), widgets.Label(value="Major Requirements To Do")]
+        display(widgets.GridBox(labels, layout=widgets.Layout(
+        grid_template_columns="repeat(2, auto)",  # Three items per row
+        grid_gap="20px",  # Space between rows and columns
+        padding="10px")))
+        #print(updatedReqsDict)
+        display(widgets.GridBox([widgets.VBox(majorItemsDone), widgets.VBox(majorItemsToDo)], layout=widgets.Layout(grid_template_columns="repeat(2, auto)", grid_gap="40px", padding="10px")))
+
+outputSemester1 = widgets.Output()
+outputSemester2 = widgets.Output()
+outputSemester3 = widgets.Output()
+outputSemester4 = widgets.Output()
+outputSemester5 = widgets.Output()
+outputSemester6 = widgets.Output()
+outputSemester7 = widgets.Output()
+outputSemester8 = widgets.Output()
+semester1 = []
+semester2 = []
+semester3 = []
+semester4 = []
+semester5 = []
+semester6 = []
+semester7 = []
+semester8 = []
+
+with outputSemester1:
+    print('Courses in Semester 1:', semester1)
+with outputSemester2:
+    print('Courses in Semester 2:', semester2)
+with outputSemester3:
+    print('Courses in Semester 3:', semester3)
+with outputSemester4:
+    print('Courses in Semester 4:', semester4)
+with outputSemester5:
+    print('Courses in Semester 5:', semester5)
+with outputSemester6:
+    print('Courses in Semester 6:', semester6)
+with outputSemester7:
+    print('Courses in Semester 7:', semester7)
+with outputSemester8:
+    print('Courses in Semester 8:', semester8)
+
+#Gives us our different semester edits
+
+semesterBox1 = widgets.Text(
+    placeholder='Search and Add Classes',
+    options=inputCourses,
+    description='',
+    ensure_option=True,
+    disabled=False)  
+semesterBox2 = widgets.Text(
+    placeholder='Search and Add Classes',
+    options=inputCourses,
+    description='',
+    ensure_option=True,
+    disabled=False)  
+semesterBox3 = widgets.Text(
+    placeholder='Search and Add Classes',
+    options=inputCourses,
+    description='',
+    ensure_option=True,
+    disabled=False)  
+semesterBox4 = widgets.Text(
+    placeholder='Search and Add Classes',
+    options=inputCourses,
+    description='',
+    ensure_option=True,
+    disabled=False)  
+semesterBox5 = widgets.Text(
+    placeholder='Search and Add Classes',
+    options=inputCourses,
+    description='',
+    ensure_option=True,
+    disabled=False)  
+semesterBox6 = widgets.Text(
+    placeholder='Search and Add Classes',
+    options=inputCourses,
+    description='',
+    ensure_option=True,
+    disabled=False)  
+semesterBox7 = widgets.Text(
+    placeholder='Search and Add Classes',
+    options=inputCourses,
+    description='',
+    ensure_option=True,
+    disabled=False)  
+semesterBox8 = widgets.Text(
+    placeholder='Search and Add Classes',
+    options=inputCourses,
+    description='',
+    ensure_option=True,
+    disabled=False)  
+
+
+semesters = [
+widgets.VBox([semesterBox1, outputSemester1]),
+widgets.VBox([semesterBox2, outputSemester2]),
+widgets.VBox([semesterBox3, outputSemester3]),
+widgets.VBox([semesterBox4, outputSemester4]),
+widgets.VBox([semesterBox5, outputSemester5]),
+widgets.VBox([semesterBox6, outputSemester6]),
+widgets.VBox([semesterBox7, outputSemester7]),
+widgets.VBox([semesterBox8, outputSemester8])
+]
+
+# # Function to handle the selection
+def on_value_change1(change):
+    if semesterBox1.value != '':  # Ensure the input is not empty
+        semester1.append(semesterBox1.value)
+        inputCourses.append(semesterBox1.value)
+    outputCourseList.clear_output()
+    with outputCourseList:
+        print("Current Courses:", inputCourses)
+    outputSemester1.clear_output()
+    with outputSemester1:
+        print('Courses in Semester 1:', semester1)
+    
+    semesterBox1.value = ''
+
+def on_value_change2(change):
+    if semesterBox2.value != '':  # Ensure the input is not empty
+        semester2.append(semesterBox2.value)
+        inputCourses.append(semesterBox2.value)
+    outputCourseList.clear_output()
+    with outputCourseList:
+        print("Current Courses:", inputCourses)
+    outputSemester2.clear_output()
+    with outputSemester2:
+        print('Courses in Semester 2:', semester2)
+    semesterBox2.value = ''
+
+def on_value_change3(change):
+    if semesterBox3.value != '':  # Ensure the input is not empty
+        semester3.append(semesterBox3.value)
+        inputCourses.append(semesterBox3.value)
+    outputCourseList.clear_output()
+    with outputCourseList:
+        print("Current Courses:", inputCourses)
+    outputSemester3.clear_output()
+    with outputSemester3:
+        print('Courses in Semester 3:', semester3)
+    semesterBox3.value = ''
+
+def on_value_change4(change):
+    if semesterBox4.value != '':  # Ensure the input is not empty
+        semester4.append(semesterBox4.value)
+        inputCourses.append(semesterBox4.value)
+    outputCourseList.clear_output()
+    with outputCourseList:
+        print("Current Courses:", inputCourses)
+    outputSemester4.clear_output()
+    with outputSemester4:
+        print('Courses in Semester 4:', semester4)
+    semesterBox4.value = ''
+
+def on_value_change5(change):
+    if semesterBox5.value != '':  # Ensure the input is not empty
+        semester5.append(semesterBox5.value)
+        inputCourses.append(semesterBox5.value)
+    outputCourseList.clear_output()
+    with outputCourseList:
+        print("Current Courses:", inputCourses)
+    outputSemester5.clear_output()
+    with outputSemester5:
+        print('Courses in Semester 5:', semester5)
+    semesterBox5.value = ''
+
+def on_value_change6(change):
+    if semesterBox6.value != '':  # Ensure the input is not empty
+        semester6.append(semesterBox6.value)
+        inputCourses.append(semesterBox6.value)
+    outputCourseList.clear_output()
+    with outputCourseList:
+        print("Current Courses:", inputCourses)
+    outputSemester6.clear_output()
+    with outputSemester6:
+        print('Courses in Semester 6:', semester6)
+    semesterBox6.value = ''
+
+def on_value_change7(change):
+    if semesterBox7.value != '':  # Ensure the input is not empty
+        semester7.append(semesterBox7.value)
+        inputCourses.append(semesterBox7.value)
+    outputCourseList.clear_output()
+    with outputCourseList:
+        print("Current Courses:", inputCourses)
+    outputSemester7.clear_output()
+    with outputSemester7:
+        print('Courses in Semester 7:', semester7)
+    semesterBox7.value = ''
+
+def on_value_change8(change):
+    if semesterBox8.value != '':  # Ensure the input is not empty
+        semester8.append(semesterBox8.value)
+        inputCourses.append(semesterBox8.value)
+    outputCourseList.clear_output()
+    with outputCourseList:
+        print("Current Courses:", inputCourses)
+    outputSemester8.clear_output()
+    with outputSemester8:
+        print('Courses in Semester 8:', semester8)
+    semesterBox8.value = ''
+
+semesterBox1.on_submit(on_value_change1)
+semesterBox2.on_submit(on_value_change2)
+semesterBox3.on_submit(on_value_change3)
+semesterBox4.on_submit(on_value_change4)
+semesterBox5.on_submit(on_value_change5)
+semesterBox6.on_submit(on_value_change6)
+semesterBox7.on_submit(on_value_change7)
+semesterBox8.on_submit(on_value_change8)
+
+#Creating the display and layout of each widget and output
+#In this case, it is in tabs to navigate, and then place widgets inside in the tabs within a Box 
+tab_contents = [
 widgets.VBox([courseTextBox,
               widgets.HBox([addCourseButton, removeCourseButton]), 
-              output, 
+              outputCourseList, 
               updateReqButton,
-              output2])
+              outputReqsListTotal]), 
+widgets.VBox([updateReqButton, outputCoreList]),
+widgets.VBox([updateReqButton, outputMajorList]),
+widgets.VBox([updateReqButton, outputHSAList]),
+widgets.VBox([courseTextBox,
+              widgets.HBox([addCourseButton, removeCourseButton]), 
+              outputCourseList,
+              widgets.Accordion(semesters, titles=('Semester 1', "Semester 2", "Semester 3", "Semester 4", "Semester 5", "Semester 6", "Semester 7", "Semester 8")),
+])]
+tab = widgets.Tab()
+tab.children = tab_contents
+tab.titles = ["Overview of Courses", "Core", "Major", "HSA", "Semester Layout"]
+tab
